@@ -9,8 +9,33 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var unitIndex = 0
+    @State private var unitIndex2 = 0
+    
+    var unit = ["Bin", "Dec", "Hex"]
+
     var body: some View {
-        Text("Hello, World!")
+        HStack {
+        VStack {
+            Picker(selection: $unitIndex, label: Text("Unit").bold()) {
+                ForEach(0..<unit.count) {
+                    Text(self.unit[$0])
+                }
+                
+            }.labelsHidden()
+            Text("You selected: \(unit[unitIndex])")
+        }
+            VStack {
+                Picker(selection: $unitIndex2, label: Text("Unit").bold()) {
+                    ForEach(0..<unit.count) {
+                        Text(self.unit[$0])
+                    }
+                    
+                }.labelsHidden()
+                Text("You selected: \(unit[unitIndex2])")
+            }
+    }
     }
 }
 
