@@ -16,25 +16,27 @@ struct ContentView: View {
     var unit = ["Bin", "Dec", "Hex"]
 
     var body: some View {
+        GeometryReader { geometry in
         HStack {
         VStack {
-            Picker(selection: $unitIndex, label: Text("Unit").bold()) {
-                ForEach(0..<unit.count) {
+            Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
+                ForEach(0..<self.unit.count) {
                     Text(self.unit[$0])
                 }
                 
-            }.labelsHidden()
-            Text("You selected: \(unit[unitIndex])")
-        }
+                }.labelsHidden()
+            Text("You selected: \(self.unit[self.unitIndex])")
+            }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
             VStack {
-                Picker(selection: $unitIndex2, label: Text("Unit").bold()) {
-                    ForEach(0..<unit.count) {
+                Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
+                    ForEach(0..<self.unit.count) {
                         Text(self.unit[$0])
                     }
                     
-                }.labelsHidden()
-                Text("You selected: \(unit[unitIndex2])")
+                    }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                Text("You selected: \(self.unit[self.unitIndex2])")
             }
+        }
     }
     }
 }
