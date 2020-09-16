@@ -18,7 +18,7 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                Text("BinDecHex")
+                Text("BinDecHex").bold()
                 Spacer()
         HStack {
         VStack {
@@ -40,6 +40,19 @@ struct ContentView: View {
                     }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
             }
         }
+                HStack {
+                    TextField(/*@START_MENU_TOKEN@*/"0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
+                        .padding(.horizontal)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Spacer()
+                }
+                Button(action: {
+                    print("Convert button tapped")
+                }) {
+                    Text("Convert")
+                    
+                }
+                Text("Result: ")
                 Spacer()
             }
     }
@@ -48,6 +61,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().previewDevice("iPhone 11 Pro")
     }
 }
