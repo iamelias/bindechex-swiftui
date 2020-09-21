@@ -16,32 +16,34 @@ struct ContentView: View {
     var unit = ["Bin", "Dec", "Hex"]
 
     var body: some View {
+        NavigationView {
         GeometryReader { geometry in
             VStack {
                 Text("BinDecHex").bold()
                 Spacer()
-        HStack {
-        VStack {
-            Text("You selected: \(self.unit[self.unitIndex])")
-            Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
-                ForEach(0..<self.unit.count) {
-                    Text(self.unit[$0])
-                }
-                
-                }.labelsHidden()
-            }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
-            VStack {
-                Text("You selected: \(self.unit[self.unitIndex2])")
-                Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
-                    ForEach(0..<self.unit.count) {
-                        Text(self.unit[$0])
-                    }
-                    
-                    }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
-            }
-        }
                 HStack {
-                    TextField(/*@START_MENU_TOKEN@*/"0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
+                    VStack {
+                        Text("\(self.unit[self.unitIndex])")
+                        Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
+                            ForEach(0..<self.unit.count) {
+                                Text(self.unit[$0])
+                            }
+                            
+                        }.labelsHidden()
+                    }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                    
+                    VStack {
+                        Text("\(self.unit[self.unitIndex2])")
+                        Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
+                            ForEach(0..<self.unit.count) {
+                                Text(self.unit[$0])
+                            }
+                            
+                        }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                    }
+                }
+                HStack {
+                    TextField("0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant(""))
                         .padding(.horizontal)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     Spacer()
@@ -49,13 +51,18 @@ struct ContentView: View {
                 Button(action: {
                     print("Convert button tapped")
                 }) {
-                    Text("Convert")
+                    Text("Convert").foregroundColor(Color.black).fontWeight(.heavy).background(Image("YunselectedButton2"))
                     
                 }
                 Text("Result: ")
                 Spacer()
-            }
-    }
+            }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline)
+        }
+        }.onAppear {
+            UINavigationBar.appearance().backgroundColor = UIColor.secondarySystemBackground
+            UINavigationBar.appearance().shadowImage = UIImage()
+            
+        }
     }
 }
 
