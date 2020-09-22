@@ -12,52 +12,75 @@ struct ContentView: View {
     
     @State private var unitIndex = 0
     @State private var unitIndex2 = 0
+    @State private var didTapConvert = false
+    @State private var didTapYShadow: CGFloat = 2.0
+    @State private var refreshIconColor: Color = .green
     
     var unit = ["Bin", "Dec", "Hex"]
-
+    
     var body: some View {
         NavigationView {
-        GeometryReader { geometry in
-            VStack {
-                Text("BinDecHex").bold()
-                Spacer()
-                HStack {
-                    VStack {
-                        Text("\(self.unit[self.unitIndex])")
-                        Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
-                            ForEach(0..<self.unit.count) {
-                                Text(self.unit[$0])
-                            }
-                            
-                        }.labelsHidden()
-                    }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
-                    
-                    VStack {
-                        Text("\(self.unit[self.unitIndex2])")
-                        Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
-                            ForEach(0..<self.unit.count) {
-                                Text(self.unit[$0])
-                            }
-                            
-                        }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2)
-                    }
-                }
-                HStack {
-                    TextField("0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant(""))
-                        .padding(.horizontal)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+            GeometryReader { geometry in
+                VStack {
+                    Text("BinDecHex").bold().fontWeight(.heavy)
                     Spacer()
-                }
-                Button(action: {
-                    print("Convert button tapped")
-                }) {
-                    Text("Convert").foregroundColor(Color.black).fontWeight(.heavy).background(Image("YunselectedButton2"))
+                    HStack {
+                        VStack {
+                            Text("\(self.unit[self.unitIndex])").fontWeight(.heavy)
+                            Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
+                                ForEach(0..<self.unit.count) {
+                                    Text(self.unit[$0])
+                                }
+                                
+                            }.labelsHidden().pickerStyle(WheelPickerStyle())
+                        }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                        
+                        VStack {
+                            Text("\(self.unit[self.unitIndex2])").fontWeight(.heavy)
+                            Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
+                                ForEach(0..<self.unit.count) {
+                                    Text(self.unit[$0])
+                                }
+                                
+                            }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                        }
+                    }
+                    Text("Enter Value").fontWeight(.heavy)
+                    HStack {
+                        TextField("0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant(""))
+                            .padding(.horizontal)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        Spacer()
+                    }
+                    Button(action: {
+                        print("Convert button tapped")
+                        self.didTapYShadow = -2.0
+                       
+                    }) {
+                        Text("Convert")
+                            .foregroundColor(Color.black)
+                            .fontWeight(.heavy)
+                    }
+                    .padding(.all)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .padding(.all)
+                    .background(Color.yellow)
+                    .cornerRadius(10.0)
+                    .padding()
+                    .shadow(color: .black, radius: 1.0, x: 0.0, y: didTapYShadow)
+                    Text("Result: ")
+                    Spacer()
                     
+                }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline).navigationBarItems(trailing: Button(action: {
+                    print("Refreshed tapped")
+                    refreshIconColor = .blue
+                    
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(refreshIconColor)
                 }
-                Text("Result: ")
-                Spacer()
-            }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline)
-        }
+                )
+            }
         }.onAppear {
             UINavigationBar.appearance().backgroundColor = UIColor.secondarySystemBackground
             UINavigationBar.appearance().shadowImage = UIImage()
