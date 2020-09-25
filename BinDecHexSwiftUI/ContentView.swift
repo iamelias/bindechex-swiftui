@@ -29,8 +29,16 @@ struct ContentView: View {
                     Text("BinDecHex").bold().fontWeight(.heavy)
                     Spacer()
                     HStack {
+                        Spacer()
+                        Text("\(self.unit[self.unitIndex])").fontWeight(.heavy)
+                        Spacer()
+                        Image(systemName: "arrow.right")
+                        Spacer()
+                        Text("\(self.unit[self.unitIndex2])").fontWeight(.heavy)
+                        Spacer()
+                    }
+                    HStack {
                         VStack {
-                            Text("\(self.unit[self.unitIndex])").fontWeight(.heavy)
                             Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
                                 ForEach(0..<self.unit.count) {
                                     Text(self.unit[$0])
@@ -40,7 +48,7 @@ struct ContentView: View {
                         }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
                         
                         VStack {
-                            Text("\(self.unit[self.unitIndex2])").fontWeight(.heavy)
+                            
                             Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
                                 ForEach(0..<self.unit.count) {
                                     Text(self.unit[$0])
@@ -67,12 +75,9 @@ struct ContentView: View {
                     
                 }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline).navigationBarItems(trailing: Button(action: {
                     print("Refreshed tapped")
-                    refreshIconColor = .blue
-                    
                 }) {
                     Image(systemName: "arrow.clockwise")
-                        .foregroundColor(refreshIconColor)
-                }
+                }.buttonStyle(RefreshButton())
                 )
             }
         }.onAppear {
@@ -84,9 +89,6 @@ struct ContentView: View {
 }
 
 struct LongWidthButton: ButtonStyle {
-
-    @State private var buttonColor: Color = Color.yellow
-    @State private var shadowFormat: CGFloat = 2.0
     
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
@@ -97,6 +99,15 @@ struct LongWidthButton: ButtonStyle {
             .cornerRadius(10.0)
             .padding()
             .shadow(color: .black, radius: 1.0, x: 0.0, y: configuration.isPressed ? -2.0 : 2.0)
+    }
+}
+
+struct RefreshButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(configuration.isPressed ? Color.blue : Color.green)
+            .padding(.all)
+            .background(Color.clear)
     }
 }
 
