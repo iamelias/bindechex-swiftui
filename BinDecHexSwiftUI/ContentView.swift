@@ -8,16 +8,20 @@
 
 import SwiftUI
 
+
+
 struct ContentView: View {
     
     @State private var unitIndex = 0
     @State private var unitIndex2 = 0
     @State private var didTapConvert = false
     @State private var didTapYShadow: CGFloat = 2.0
+    @State private var didNotTapYShadow: CGFloat = -2.0
     @State private var refreshIconColor: Color = .green
+    @State private var buttonIsSelected: Bool = false
+    @State private var Label = "Hello"
     
     var unit = ["Bin", "Dec", "Hex"]
-    
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -53,21 +57,11 @@ struct ContentView: View {
                         Spacer()
                     }
                     Button(action: {
-                        print("Convert button tapped")
-                        self.didTapYShadow = -2.0
-                       
                     }) {
                         Text("Convert")
                             .foregroundColor(Color.black)
                             .fontWeight(.heavy)
-                    }
-                    .padding(.all)
-                    .frame(minWidth: 0, maxWidth: .infinity)
-                    .padding(.all)
-                    .background(Color.yellow)
-                    .cornerRadius(10.0)
-                    .padding()
-                    .shadow(color: .black, radius: 1.0, x: 0.0, y: didTapYShadow)
+                    }.buttonStyle(LongWidthButton())
                     Text("Result: ")
                     Spacer()
                     
@@ -88,6 +82,25 @@ struct ContentView: View {
         }
     }
 }
+
+struct LongWidthButton: ButtonStyle {
+
+    @State private var buttonColor: Color = Color.yellow
+    @State private var shadowFormat: CGFloat = 2.0
+    
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .padding(.all)
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .padding(.all)
+            .background(configuration.isPressed ? Color.blue : Color.yellow)
+            .cornerRadius(10.0)
+            .padding()
+            .shadow(color: .black, radius: 1.0, x: 0.0, y: configuration.isPressed ? -2.0 : 2.0)
+    }
+}
+
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
