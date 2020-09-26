@@ -26,6 +26,7 @@ struct ContentView: View {
         NavigationView {
             GeometryReader { geometry in
                 VStack {
+                    //Test
                     Text("BinDecHex").bold().fontWeight(.heavy)
                     Spacer()
                     HStack {
