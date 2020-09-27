@@ -20,13 +20,13 @@ struct ContentView: View {
     @State private var refreshIconColor: Color = .green
     @State private var buttonIsSelected: Bool = false
     @State private var Label = "Hello"
+    @State private var textName = ""
     
     var unit = ["Bin", "Dec", "Hex"]
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
                 VStack {
-                    //Test
                     Text("BinDecHex").bold().fontWeight(.heavy)
                     Spacer()
                     HStack {
@@ -60,9 +60,10 @@ struct ContentView: View {
                     }
                     Text("Enter Value").fontWeight(.heavy)
                     HStack {
-                        TextField("0"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant(""))
+                        TextField("0", text: $textName)
                             .padding(.horizontal)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .modifier(Keyboard())
                         Spacer()
                     }
                     Button(action: {
@@ -87,7 +88,55 @@ struct ContentView: View {
             
         }
     }
-}
+    
+    //Check Format Methods
+    func checkBinary() {
+        
+    }
+    
+    func checkDecimal() {
+        
+    }
+    
+    func checkHexadecimal() {
+        
+    }
+    
+    
+    //Convert Methods
+    func binToBin() {
+        
+    }
+    func binToDec() {
+        let dec = Int("Int", radix: 2)
+    }
+    func binToHex() {
+        let hex = String(Int("000",radix: 2)!, radix: 16)
+    }
+    func decToDec() {
+        
+    }
+    func decToBin() {
+        var binary = String(000, radix: 2)
+    }
+    func decToHex() {
+        let hex = String(0, radix: 16)
+    }
+    func hexToHex() {
+        
+    }
+    func hexToBin() {
+        var bin = String(Int("F", radix: 16)!, radix: 2)
+    }
+    func hexToDec() {
+        
+    }
+    
+    //Alert Methods
+    
+    
+    //CoreData Methods
+
 
 struct LongWidthButton: ButtonStyle {
     
@@ -106,9 +155,10 @@ struct LongWidthButton: ButtonStyle {
 struct RefreshButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(configuration.isPressed ? Color.blue : Color.green)
+            .cornerRadius(10)
+            .foregroundColor(configuration.isPressed ? Color.yellow : Color.green)
             .padding(.all)
-            .background(Color.clear)
+            .background(configuration.isPressed ? Color.blue : Color.clear)
     }
 }
 
@@ -118,4 +168,5 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().previewDevice("iPhone 11 Pro")
     }
+}
 }

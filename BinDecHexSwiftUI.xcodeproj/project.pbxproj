@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6475CAF2252104F900BBC263 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6475CAF1252104F900BBC263 /* Keyboard.swift */; };
 		648B622924D092AD00CE14B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648B622824D092AD00CE14B1 /* AppDelegate.swift */; };
 		648B622B24D092AD00CE14B1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648B622A24D092AD00CE14B1 /* SceneDelegate.swift */; };
 		648B622E24D092AD00CE14B1 /* BinDecHexSwiftUI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 648B622C24D092AD00CE14B1 /* BinDecHexSwiftUI.xcdatamodeld */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6475CAF1252104F900BBC263 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
 		648B622524D092AD00CE14B1 /* BinDecHexSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinDecHexSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		648B622824D092AD00CE14B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		648B622A24D092AD00CE14B1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				648B623924D092B100CE14B1 /* Info.plist */,
 				648B622C24D092AD00CE14B1 /* BinDecHexSwiftUI.xcdatamodeld */,
 				648B623324D092B100CE14B1 /* Preview Content */,
+				6475CAF1252104F900BBC263 /* Keyboard.swift */,
 			);
 			path = BinDecHexSwiftUI;
 			sourceTree = "<group>";
@@ -151,6 +154,7 @@
 			files = (
 				648B622E24D092AD00CE14B1 /* BinDecHexSwiftUI.xcdatamodeld in Sources */,
 				648B622924D092AD00CE14B1 /* AppDelegate.swift in Sources */,
+				6475CAF2252104F900BBC263 /* Keyboard.swift in Sources */,
 				648B623024D092AD00CE14B1 /* ContentView.swift in Sources */,
 				648B622B24D092AD00CE14B1 /* SceneDelegate.swift in Sources */,
 			);
