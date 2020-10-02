@@ -12,17 +12,208 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var unitIndex = 0
-    @State private var unitIndex2 = 0
-    @State private var didTapConvert = false
-    @State private var didTapYShadow: CGFloat = 2.0
-    @State private var didNotTapYShadow: CGFloat = -2.0
-    @State private var refreshIconColor: Color = .green
-    @State private var buttonIsSelected: Bool = false
-    @State private var Label = "Hello"
-    @State private var textName = ""
-    
+    @State private var unitIndex = 0 //first picker's unit
+    @State private var unitIndex2 = 0 //secon picker's unit
+    @State private var textName = "" //input TextField
     var unit = ["Bin", "Dec", "Hex"]
+
+    //Check Format Methods
+    func padBinary(binary: String) -> String {
+        var binary = binary
+        
+        while binary.count < 8 {
+            binary = "0\(binary)"
+        }
+        return binary
+    }
+    
+    func hapticError() {
+    }
+    
+    func checkBinary(binary: String) -> Bool {
+        if binary == "" {
+            //call alert
+            return false
+        }
+        for c in binary {
+            if c != "0" && c != "1" {
+                //call alert
+                return false
+            }
+        }
+        return true
+    }
+    
+    func checkDecimal(decimal: String) -> Bool {
+        let checkNum = Int(decimal) //convert passed string to int, won't convert nonint
+        if checkNum != nil { //if doesn't convert
+            
+            if checkNum! < 0 {
+                //call error alert
+                return false
+            }
+            
+            guard checkNum! < 1000000000 else { //making an upperlimit to users capability
+                //call error alert
+                return false
+            }
+            return true //it is a valid int/decimal
+        }
+        else {
+            //call error alert
+            return false
+        }
+    }
+    
+    func checkHexadecimal() -> String {
+        let hex = textName
+        
+        if hex == "" {
+            return "error"
+        }
+        
+        if hex.count > 7 {
+            return "error2"
+        }
+        let checkHex = hex.map { $0.isHexDigit}
+        
+        for i in 0..<checkHex.count{
+            if checkHex[i] == false {
+                return "error"
+            }
+        }
+        return hex
+    }
+    
+    //Obtain/Handle Methods
+    
+    func getBinary() -> String {
+        let bin = textName
+        let checkSyntax = checkBinary(binary: bin)
+        
+        guard checkSyntax == true else {
+            return "error"
+        }
+        return bin
+    }
+    
+    func getDecimal() -> String {
+        let dec = textName
+        
+        let checkSyntax = checkDecimal(decimal: dec)
+        guard checkSyntax == true else {
+            return "error"
+        }
+        return dec
+        
+    }
+    
+    func getHexadecimal() -> String {
+        let hex = textName
+        
+        if hex == "" {
+            return "error"
+        }
+        
+        if hex.count > 7 {
+            return "error2"
+        }
+        let checkHex = hex.map { $0.isHexDigit}
+        
+        for i in 0..<checkHex.count{
+            if checkHex[i] == false {
+                return "error"
+            }
+        }
+        return hex
+    }
+    
+    
+    //Convert Methods
+    func binToBin() {
+        
+    }
+    func binToDec() {
+        let dec = Int("Int", radix: 2)
+    }
+    func binToHex() {
+        let bin = self.getBinary()
+        guard bin != "error" else{
+            return
+        }
+        let hex = String(Int(bin, radix: 2)!, radix: 16) //Convert Binary to Hex
+        //saveCore(hex.uppercased())
+        //displayResultView("Hexadecimal:",hex.uppercased())
+    }
+    func decToDec() {
+        
+    }
+    func decToBin() {
+        let retrievedDec = getDecimal()
+        guard retrievedDec != "error" else {
+            return
+        }
+        let bin = Int(retrievedDec)
+        var binary = String(bin!, radix: 2) //converting from string to binary
+        
+        binary = padBinary(binary: binary) //padding to the left with 0 until num of binary digits = 8
+        
+       // saveCore(binary)
+        //displayResultView("Binary:",binary)
+    }
+    func decToHex() {
+        let retrievedDec = getDecimal()
+        guard retrievedDec != "error" else {
+            return
+        }
+        let dec = Int(retrievedDec)
+        let hex = String(dec!, radix: 16)
+//        saveCore(hex.uppercased())
+//        displayResultView("Hexadecimal:",hex.uppercased())
+    }
+    func hexToHex() {
+        
+    }
+    func hexToBin() {
+        var bin = String(Int("F", radix: 16)!, radix: 2)
+    }
+    func hexToDec() {
+        let hex = checkHexadecimal()
+        guard hex != "error" else{
+            //call error alert
+            return
+        }
+        guard hex != "error2" else {
+            //call error alert
+            return
+        }
+        let dec = Int(hex, radix: 16)!
+        let stringDec = "\(dec)"
+//        saveCore(stringDec)
+//        displayResultView("Decimal:",stringDec)
+    }
+    
+    func padNumber() { //Creating an 8 bit digit for decimal
+        
+    }
+    
+    //Alert Methods
+    
+    func displayErrorMessage() {
+        
+    }
+    
+    
+    //CoreData Methods
+    func saveToCoreData() {
+        
+    }
+
+    //Padding Method
+
+    
+    
+    //UI
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -89,53 +280,6 @@ struct ContentView: View {
         }
     }
     
-    //Check Format Methods
-    func checkBinary() {
-        
-    }
-    
-    func checkDecimal() {
-        
-    }
-    
-    func checkHexadecimal() {
-        
-    }
-    
-    
-    //Convert Methods
-    func binToBin() {
-        
-    }
-    func binToDec() {
-        let dec = Int("Int", radix: 2)
-    }
-    func binToHex() {
-        let hex = String(Int("000",radix: 2)!, radix: 16)
-    }
-    func decToDec() {
-        
-    }
-    func decToBin() {
-        var binary = String(000, radix: 2)
-    }
-    func decToHex() {
-        let hex = String(0, radix: 16)
-    }
-    func hexToHex() {
-        
-    }
-    func hexToBin() {
-        var bin = String(Int("F", radix: 16)!, radix: 2)
-    }
-    func hexToDec() {
-        
-    }
-    
-    //Alert Methods
-    
-    
-    //CoreData Methods
 
 
 struct LongWidthButton: ButtonStyle {
