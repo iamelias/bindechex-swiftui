@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var unitIndex = 0 //first picker's unit
     @State private var unitIndex2 = 0 //secon picker's unit
     @State private var textName = "" //input TextField
+    @State private var result = "" //Result Text
+    @State private var showAlert = false
     var unit = ["Bin", "Dec", "Hex"]
 
     //Check Format Methods
@@ -32,12 +34,12 @@ struct ContentView: View {
     
     func checkBinary(binary: String) -> Bool {
         if binary == "" {
-            //call alert
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
             return false
         }
         for c in binary {
             if c != "0" && c != "1" {
-                //call alert
+                displayErrorMessage(message: ("Error", "Wrong format", "OK"))
                 return false
             }
         }
@@ -54,13 +56,13 @@ struct ContentView: View {
             }
             
             guard checkNum! < 1000000000 else { //making an upperlimit to users capability
-                //call error alert
+                displayErrorMessage(message: ("Error", "Wrong format", "OK"))
                 return false
             }
             return true //it is a valid int/decimal
         }
         else {
-            //call error alert
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
             return false
         }
     }
@@ -130,25 +132,50 @@ struct ContentView: View {
     
     
     //Convert Methods
-    func binToBin() {
+    func binToBin() {//********************
+        var bin = getBinary()
         
+        guard bin != "error" else{
+            return
+        }
+        
+        bin = padBinary(binary: bin)
+        displayResult(converted: ("Binary", bin))
+        
+//        saveCore(bin)
+//        displayResultView("Binary:",bin)
     }
-    func binToDec() {
-        let dec = Int("Int", radix: 2)
+    func binToDec() {//*******************
+        let bin = getBinary()
+        guard bin != "error" else{ return}
+        
+        if let dec = Int(textName, radix: 2) {
+            let stringDec = "\(dec)"
+            displayResult(converted: ("Decimal", stringDec))
+//            saveCore(stringDec)
+//            displayResultView("Decimal:",stringDec)
+        }
     }
-    func binToHex() {
+    func binToHex() {//**********************
         let bin = self.getBinary()
         guard bin != "error" else{
             return
         }
-        let hex = String(Int(bin, radix: 2)!, radix: 16) //Convert Binary to Hex
+        let hex = String(Int(bin, radix: 2)!, radix: 16)//Convert Binary to Hex
+        displayResult(converted: ("Hexadecimal", hex.uppercased()))
         //saveCore(hex.uppercased())
-        //displayResultView("Hexadecimal:",hex.uppercased())
     }
-    func decToDec() {
-        
+    func decToDec() {//**********************
+        let dec = getDecimal()
+        guard dec != "error" else {
+            return
+        }
+        displayResult(converted: ("Decimal", dec))
+
+//        saveCore(dec)
+//        displayResultView("Decimal:", dec)
     }
-    func decToBin() {
+    func decToBin() {//*****************
         let retrievedDec = getDecimal()
         guard retrievedDec != "error" else {
             return
@@ -157,50 +184,101 @@ struct ContentView: View {
         var binary = String(bin!, radix: 2) //converting from string to binary
         
         binary = padBinary(binary: binary) //padding to the left with 0 until num of binary digits = 8
-        
+        displayResult(converted: ("Binary", binary))
+
        // saveCore(binary)
         //displayResultView("Binary:",binary)
     }
-    func decToHex() {
+    func decToHex() {//*******************
         let retrievedDec = getDecimal()
         guard retrievedDec != "error" else {
             return
         }
         let dec = Int(retrievedDec)
         let hex = String(dec!, radix: 16)
+        displayResult(converted: ("Hexadecimal", hex.uppercased()))
 //        saveCore(hex.uppercased())
-//        displayResultView("Hexadecimal:",hex.uppercased())
     }
-    func hexToHex() {
-        
-    }
-    func hexToBin() {
-        var bin = String(Int("F", radix: 16)!, radix: 2)
-    }
-    func hexToDec() {
+    func hexToHex() {//*****************
         let hex = checkHexadecimal()
+        
         guard hex != "error" else{
-            //call error alert
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
             return
         }
         guard hex != "error2" else {
-            //call error alert
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            return
+        }
+        displayResult(converted: ("Hexadecimal", hex.uppercased()))
+//        saveCore(hex.uppercased())
+        
+    }
+    func hexToBin() {//******************
+        let hex = checkHexadecimal()
+        guard hex != "error" else{
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            return
+        }
+        guard hex != "error2" else {
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            return
+        }
+        var bin = String(Int(hex, radix: 16)!, radix: 2)
+        bin = padBinary(binary: bin)
+        displayResult(converted: ("Binary", bin))
+//        saveCore(bin)
+//
+    }
+    
+    func hexToDec() {
+        let hex = checkHexadecimal()
+        guard hex != "error" else{
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            return
+        }
+        guard hex != "error2" else {
+            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
             return
         }
         let dec = Int(hex, radix: 16)!
         let stringDec = "\(dec)"
+        displayResult(converted: ("Decimal", stringDec))
 //        saveCore(stringDec)
-//        displayResultView("Decimal:",stringDec)
     }
     
-    func padNumber() { //Creating an 8 bit digit for decimal
-        
+    // 0 = Bin, 1 = Hex, 2 = Hex
+    func convertButtonTapped() {
+        let checkBool: Bool = true
+        switch checkBool {
+        case unitIndex == 0 && unitIndex2 == 1: binToDec()
+        case unitIndex == 0 && unitIndex2 == 2: binToHex()
+        case unitIndex == 0 && unitIndex2 == 0: binToBin()
+        case unitIndex == 1 && unitIndex2 == 0: decToBin()
+        case unitIndex == 1 && unitIndex2 == 2: decToHex()
+        case unitIndex == 1 && unitIndex2 == 1: decToDec()
+        case unitIndex == 2 && unitIndex2 == 0: hexToBin()
+        case unitIndex == 2 && unitIndex2 == 1: hexToDec()
+        case unitIndex == 2 && unitIndex2 == 2: hexToHex()
+        default: print("Error") //will never execute decault
+        }
     }
     
     //Alert Methods
     
-    func displayErrorMessage() {
-        
+    func displayErrorMessage(message: (String, String, String)) {
+        Alert(title: Text(message.0), message: Text(message.1), dismissButton: .default(Text(message.2)))
+    }
+    
+    func displayResult(converted: (String, String)) {
+        result = "\(converted.0): \(converted.1)"
+    }
+    
+    
+    func resetView() {
+        textName = ""
+        unitIndex = 1
+        unitIndex2 = 1
     }
     
     
@@ -209,10 +287,9 @@ struct ContentView: View {
         
     }
 
-    //Padding Method
 
     
-    
+  //************************************************************************
     //UI
     var body: some View {
         NavigationView {
@@ -258,12 +335,14 @@ struct ContentView: View {
                         Spacer()
                     }
                     Button(action: {
+                        convertButtonTapped()
                     }) {
                         Text("Convert")
                             .foregroundColor(Color.black)
                             .fontWeight(.heavy)
                     }.buttonStyle(LongWidthButton())
                     Text("Result: ")
+                    Text("\(result)")
                     Spacer()
                     
                 }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline).navigationBarItems(trailing: Button(action: {
