@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var textName = "" //input TextField
     @State private var result = "" //Result Text
     @State private var showAlert = false
+    @State private var errorMessage: (String, String, String) = ("Error", "Error", "Error")
     var unit = ["Bin", "Dec", "Hex"]
 
     //Check Format Methods
@@ -34,12 +35,12 @@ struct ContentView: View {
     
     func checkBinary(binary: String) -> Bool {
         if binary == "" {
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in binary format.", "Ok"))
             return false
         }
         for c in binary {
             if c != "0" && c != "1" {
-                displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+                updateErrorMessage(message: ("Input Error", "Can't convert because input is not in binary format.", "Ok"))
                 return false
             }
         }
@@ -56,13 +57,13 @@ struct ContentView: View {
             }
             
             guard checkNum! < 1000000000 else { //making an upperlimit to users capability
-                displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+                updateErrorMessage(message: ("Input Error", "Input is past upper limit", "Ok"))
                 return false
             }
             return true //it is a valid int/decimal
         }
         else {
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in decimal format. Input can't be negative.", "Ok"))
             return false
         }
     }
@@ -203,11 +204,11 @@ struct ContentView: View {
         let hex = checkHexadecimal()
         
         guard hex != "error" else{
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
         guard hex != "error2" else {
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
         displayResult(converted: ("Hexadecimal", hex.uppercased()))
@@ -217,11 +218,11 @@ struct ContentView: View {
     func hexToBin() {//******************
         let hex = checkHexadecimal()
         guard hex != "error" else{
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
         guard hex != "error2" else {
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Input is past upper limit", "Ok"))
             return
         }
         var bin = String(Int(hex, radix: 16)!, radix: 2)
@@ -234,11 +235,11 @@ struct ContentView: View {
     func hexToDec() {
         let hex = checkHexadecimal()
         guard hex != "error" else{
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
         guard hex != "error2" else {
-            displayErrorMessage(message: ("Error", "Wrong format", "OK"))
+            updateErrorMessage(message: ("Input Error", "Input is past upper limit.", "Ok"))
             return
         }
         let dec = Int(hex, radix: 16)!
@@ -266,19 +267,22 @@ struct ContentView: View {
     
     //Alert Methods
     
-    func displayErrorMessage(message: (String, String, String)) {
-        Alert(title: Text(message.0), message: Text(message.1), dismissButton: .default(Text(message.2)))
+    func updateErrorMessage(message: (String, String, String)) {
+        errorMessage = (message.0, message.1, message.2)
+        showAlert = true
     }
     
     func displayResult(converted: (String, String)) {
         result = "\(converted.0): \(converted.1)"
     }
     
-    
     func resetView() {
         textName = ""
         unitIndex = 1
         unitIndex2 = 1
+        result = ""
+        
+        errorMessage = ("Error", "Error", "Error")
     }
     
     
@@ -340,13 +344,18 @@ struct ContentView: View {
                         Text("Convert")
                             .foregroundColor(Color.black)
                             .fontWeight(.heavy)
-                    }.buttonStyle(LongWidthButton())
+                    }
+                    .buttonStyle(LongWidthButton())
+                    .alert(isPresented: $showAlert) {
+                        Alert(title: Text("\(errorMessage.0)"), message: Text("\(errorMessage.1)"), dismissButton: .default(Text("\(errorMessage.2)")))
+                    }
                     Text("Result: ")
                     Text("\(result)")
                     Spacer()
                     
                 }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline).navigationBarItems(trailing: Button(action: {
                     print("Refreshed tapped")
+                    resetView()
                 }) {
                     Image(systemName: "arrow.clockwise")
                 }.buttonStyle(RefreshButton())
