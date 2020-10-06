@@ -6,7 +6,9 @@
 //  Copyright © 2020 Elias Hall. All rights reserved.
 //
 
+import Foundation
 import SwiftUI
+import CoreData
 
 
 
@@ -19,6 +21,14 @@ struct ContentView: View {
     @State private var showAlert = false
     @State private var errorMessage: (String, String, String) = ("Error", "Error", "Error")
     var unit = ["Bin", "Dec", "Hex"]
+    @State private var savedInputs: [SavedInput] = []
+    
+    
+        func fetchCoreInput() { // When view appears
+        print("Called fetchCoreInput")
+            
+       savedInputs = CoreDataManager.shared.getAllSavedInput()
+    }
 
     //Check Format Methods
     func padBinary(binary: String) -> String {
@@ -364,6 +374,7 @@ struct ContentView: View {
         }.onAppear {
             UINavigationBar.appearance().backgroundColor = UIColor.secondarySystemBackground
             UINavigationBar.appearance().shadowImage = UIImage()
+            fetchCoreInput()
             
         }
     }
