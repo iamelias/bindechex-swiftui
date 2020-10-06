@@ -14,6 +14,11 @@ import CoreData
 
 struct ContentView: View {
     
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: SavedInput.entity(), sortDescriptors: [
+                    NSSortDescriptor(keyPath: \SavedInput.fieldText, ascending: true)]
+    ) var savedData: FetchedResults<SavedInput> //saved data holds the persisted data
+
     @State private var unitIndex = 0 //first picker's unit
     @State private var unitIndex2 = 0 //secon picker's unit
     @State private var textName = "" //input TextField
@@ -350,6 +355,22 @@ struct ContentView: View {
                     }
                     Button(action: {
                         convertButtonTapped()
+                        
+                        managedObjectContext.delete(savedInputs[0]) //deleting current saved before new save
+                        
+                        let coreData = SavedInput(context: self.managedObjectContext)
+                        coreData.fieldText = textName
+                        coreData.inputPick = "\(unitIndex)"
+                        coreData.outputPick = "\(unitIndex2)"
+                        coreData.resultPresent = true
+                        coreData.resultValue = result
+                        
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print("Error with core data retrieval")
+                        }
+                        
                     }) {
                         Text("Convert")
                             .foregroundColor(Color.black)
