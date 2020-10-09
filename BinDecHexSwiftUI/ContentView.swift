@@ -19,21 +19,27 @@ struct ContentView: View {
                     NSSortDescriptor(keyPath: \SavedInput.fieldText, ascending: true)]
     ) var savedData: FetchedResults<SavedInput> //saved data holds the persisted data
 
-    @State private var unitIndex = 0 //first picker's unit
-    @State private var unitIndex2 = 0 //secon picker's unit
+    @State private var unitIndex: Int = 1 //first picker's unit
+    @State private var unitIndex2: Int = 1 //secon picker's unit
     @State private var textName = "" //input TextField
     @State private var result = "" //Result Text
+    @State private var showResult = false
     @State private var showAlert = false
     @State private var errorMessage: (String, String, String) = ("Error", "Error", "Error")
     var unit = ["Bin", "Dec", "Hex"]
+    var unit2 = ["Bin", "Dec", "Hex"]
+    var saveUnit1: Int = 1
+    var saveUnit2: Int = 1
     @State private var savedInputs: [SavedInput] = []
-    
     
         func fetchCoreInput() { // When view appears
         print("Called fetchCoreInput")
             
        savedInputs = CoreDataManager.shared.getAllSavedInput()
+        setupView()
+            
     }
+    
 
     //Check Format Methods
     func padBinary(binary: String) -> String {
@@ -159,6 +165,7 @@ struct ContentView: View {
         displayResult(converted: ("Binary", bin))
         
 //        saveCore(bin)
+        saveToCoreData(data: bin)
 //        displayResultView("Binary:",bin)
     }
     func binToDec() {//*******************
@@ -168,7 +175,7 @@ struct ContentView: View {
         if let dec = Int(textName, radix: 2) {
             let stringDec = "\(dec)"
             displayResult(converted: ("Decimal", stringDec))
-//            saveCore(stringDec)
+            saveToCoreData(data: stringDec)
 //            displayResultView("Decimal:",stringDec)
         }
     }
@@ -179,7 +186,7 @@ struct ContentView: View {
         }
         let hex = String(Int(bin, radix: 2)!, radix: 16)//Convert Binary to Hex
         displayResult(converted: ("Hexadecimal", hex.uppercased()))
-        //saveCore(hex.uppercased())
+        saveToCoreData(data: hex.uppercased())
     }
     func decToDec() {//**********************
         let dec = getDecimal()
@@ -188,7 +195,7 @@ struct ContentView: View {
         }
         displayResult(converted: ("Decimal", dec))
 
-//        saveCore(dec)
+        saveToCoreData(data: dec)
 //        displayResultView("Decimal:", dec)
     }
     func decToBin() {//*****************
@@ -203,6 +210,7 @@ struct ContentView: View {
         displayResult(converted: ("Binary", binary))
 
        // saveCore(binary)
+        saveToCoreData(data: binary)
         //displayResultView("Binary:",binary)
     }
     func decToHex() {//*******************
@@ -212,8 +220,8 @@ struct ContentView: View {
         }
         let dec = Int(retrievedDec)
         let hex = String(dec!, radix: 16)
-        displayResult(converted: ("Hexadecimal", hex.uppercased()))
-//        saveCore(hex.uppercased())
+        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (1,2))
+        saveToCoreData(data: hex.uppercased(), settings: (1,2))
     }
     func hexToHex() {//*****************
         let hex = checkHexadecimal()
@@ -226,8 +234,8 @@ struct ContentView: View {
             updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
-        displayResult(converted: ("Hexadecimal", hex.uppercased()))
-//        saveCore(hex.uppercased())
+        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (2,2))
+        saveToCoreData(data: hex.uppercased())
         
     }
     func hexToBin() {//******************
@@ -243,7 +251,7 @@ struct ContentView: View {
         var bin = String(Int(hex, radix: 16)!, radix: 2)
         bin = padBinary(binary: bin)
         displayResult(converted: ("Binary", bin))
-//        saveCore(bin)
+        saveToCoreData(data: bin)
 //
     }
     
@@ -260,7 +268,9 @@ struct ContentView: View {
         let dec = Int(hex, radix: 16)!
         let stringDec = "\(dec)"
         displayResult(converted: ("Decimal", stringDec))
-//        saveCore(stringDec)
+        
+        saveToCoreData(data: stringDec)
+        
     }
     
     // 0 = Bin, 1 = Hex, 2 = Hex
@@ -287,7 +297,11 @@ struct ContentView: View {
         showAlert = true
     }
     
-    func displayResult(converted: (String, String)) {
+    func displayResult(converted: (String, String), settings: (Int, Int)? = nil) {
+        if settings != nil {
+            unitIndex = settings!.0
+            unitIndex2 = settings!.1
+        }
         result = "\(converted.0): \(converted.1)"
     }
     
@@ -298,12 +312,78 @@ struct ContentView: View {
         result = ""
         
         errorMessage = ("Error", "Error", "Error")
+        managedObjectContext.delete(savedInputs[0])
+
     }
     
     
     //CoreData Methods
-    func saveToCoreData() {
+    func saveToCoreData(data: String, settings: (Int, Int)? = nil) {
+        print("made it to SaveCore Data method")
+        if !savedInputs.isEmpty {
+            print("***************************")
+            print(savedInputs[0])
+            print(savedInputs.count)
+            print("***************************")
+            
+            for i in 0..<savedInputs.count {
+                managedObjectContext.delete(savedInputs[i]) //deleting current saved before new save
+            }
+            savedInputs.removeAll()
+        }
+        else {
+            print("Testing delete didn't happen")
+        }
+        let coreData = SavedInput(context: self.managedObjectContext)
+        coreData.fieldText = textName
+//        coreData.inputPick = "1"
+//        coreData.outputPick = "2"
+        coreData.inputPick = "\(settings!.0)"
+        coreData.outputPick = "\(settings!.1)"
+        coreData.resultPresent = true
+        coreData.resultValue = data
         
+        do {
+            print("core saving")
+            try self.managedObjectContext.save()
+            savedInputs.append(coreData)
+            setupView(setting: (settings!.0, settings!.1))
+        } catch {
+            print("Error with core data retrieval")
+        }
+//        savedInputs[0] = coreData
+                
+    }
+    
+    func defaultView() {
+        print("default View called")
+        unitIndex = 1
+        unitIndex2 = 1
+        textName = ""
+        result = ""
+        showResult = false
+        
+    }
+    
+    func setupView(setting: (Int, Int)? = nil) { //Error maybe here
+        guard !savedInputs.isEmpty else {
+            print("savedInputs is empty")
+            defaultView()
+            return
+        }
+        print("Made it to setupView Method")
+        unitIndex = Int(savedInputs.last!.inputPick!)!
+        unitIndex2 = Int(savedInputs.last!.outputPick!)!
+        textName = savedInputs.last!.fieldText!
+        result = savedInputs.last!.resultValue!
+        showResult = savedInputs.last!.resultPresent
+        
+        if savedInputs.count > 0 {
+            showResult = true
+        }
+        else {
+            showResult = false
+        }
     }
 
 
@@ -331,15 +411,14 @@ struct ContentView: View {
                                 ForEach(0..<self.unit.count) {
                                     Text(self.unit[$0])
                                 }
-                                
                             }.labelsHidden().pickerStyle(WheelPickerStyle())
                         }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
                         
                         VStack {
                             
-                            Picker(selection: self.$unitIndex2, label: Text("Unit").bold()) {
-                                ForEach(0..<self.unit.count) {
-                                    Text(self.unit[$0])
+                            Picker(selection: self.$unitIndex2, label: Text("Unit2").bold()) {
+                                ForEach(0..<self.unit2.count) {
+                                    Text(self.unit2[$0])
                                 }
                                 
                             }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2)
@@ -356,20 +435,6 @@ struct ContentView: View {
                     Button(action: {
                         convertButtonTapped()
                         
-                        managedObjectContext.delete(savedInputs[0]) //deleting current saved before new save
-                        
-                        let coreData = SavedInput(context: self.managedObjectContext)
-                        coreData.fieldText = textName
-                        coreData.inputPick = "\(unitIndex)"
-                        coreData.outputPick = "\(unitIndex2)"
-                        coreData.resultPresent = true
-                        coreData.resultValue = result
-                        
-                        do {
-                            try self.managedObjectContext.save()
-                        } catch {
-                            print("Error with core data retrieval")
-                        }
                         
                     }) {
                         Text("Convert")
@@ -395,7 +460,12 @@ struct ContentView: View {
         }.onAppear {
             UINavigationBar.appearance().backgroundColor = UIColor.secondarySystemBackground
             UINavigationBar.appearance().shadowImage = UIImage()
+            print("OnAppear")
+            unitIndex = saveUnit1
+            unitIndex2 = saveUnit2
+            defaultView()
             fetchCoreInput()
+            
             
         }
     }
