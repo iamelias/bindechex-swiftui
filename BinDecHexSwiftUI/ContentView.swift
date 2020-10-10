@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var textName = "" //input TextField
     @State private var result = "" //Result Text
     @State private var showResult = false
+    @State private var showResultLabel = false
     @State private var showAlert = false
     @State private var errorMessage: (String, String, String) = ("Error", "Error", "Error")
     var unit = ["Bin", "Dec", "Hex"]
@@ -295,6 +296,7 @@ struct ContentView: View {
             unitIndex2 = settings!.1
         }
         result = "\(converted.0): \(converted.1)"
+        print(" showing result \(result) in displayResult method")
     }
     
     func resetView() {
@@ -303,6 +305,7 @@ struct ContentView: View {
         unitIndex2 = 1
         result = ""
         showAlert = false
+        showResultLabel = false
         
         errorMessage = ("Error", "Error", "Error")
         //managedObjectContext.delete(savedInputs[0])
@@ -405,7 +408,7 @@ struct ContentView: View {
                                     Text(self.unit[$0])
                                 }
                             }.labelsHidden().pickerStyle(WheelPickerStyle())
-                        }.labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                        }.labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
                         
                         VStack {
                             
@@ -414,7 +417,7 @@ struct ContentView: View {
                                     Text(self.unit2[$0])
                                 }
                                 
-                            }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2)
+                            }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
                         }
                     }
                     Text("Enter Value").fontWeight(.heavy)
