@@ -73,7 +73,7 @@ struct ContentView: View {
         if checkNum != nil { //if doesn't convert
             
             if checkNum! < 0 {
-                //call error alert
+                updateErrorMessage(message: ("Input Error", "Input cannot be negative", "Ok"))
                 return false
             }
             
@@ -152,7 +152,6 @@ struct ContentView: View {
         return hex
     }
     
-    
     //Convert Methods
     func binToBin() {//********************
         var bin = getBinary()
@@ -162,11 +161,9 @@ struct ContentView: View {
         }
         
         bin = padBinary(binary: bin)
-        displayResult(converted: ("Binary", bin))
+        displayResult(converted: ("Binary", bin), settings: (0,0))
         
-//        saveCore(bin)
-        saveToCoreData(data: bin)
-//        displayResultView("Binary:",bin)
+        saveToCoreData(data: bin, settings: (0,0))
     }
     func binToDec() {//*******************
         let bin = getBinary()
@@ -174,9 +171,8 @@ struct ContentView: View {
         
         if let dec = Int(textName, radix: 2) {
             let stringDec = "\(dec)"
-            displayResult(converted: ("Decimal", stringDec))
-            saveToCoreData(data: stringDec)
-//            displayResultView("Decimal:",stringDec)
+            displayResult(converted: ("Decimal", stringDec), settings: (0,1))
+            saveToCoreData(data: stringDec, settings: (0,1))
         }
     }
     func binToHex() {//**********************
@@ -185,18 +181,17 @@ struct ContentView: View {
             return
         }
         let hex = String(Int(bin, radix: 2)!, radix: 16)//Convert Binary to Hex
-        displayResult(converted: ("Hexadecimal", hex.uppercased()))
-        saveToCoreData(data: hex.uppercased())
+        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (0,2))
+        saveToCoreData(data: hex.uppercased(), settings: (0,2))
     }
     func decToDec() {//**********************
         let dec = getDecimal()
         guard dec != "error" else {
             return
         }
-        displayResult(converted: ("Decimal", dec))
+        displayResult(converted: ("Decimal", dec), settings: (1,1))
 
-        saveToCoreData(data: dec)
-//        displayResultView("Decimal:", dec)
+        saveToCoreData(data: dec, settings: (1,1))
     }
     func decToBin() {//*****************
         let retrievedDec = getDecimal()
@@ -207,11 +202,9 @@ struct ContentView: View {
         var binary = String(bin!, radix: 2) //converting from string to binary
         
         binary = padBinary(binary: binary) //padding to the left with 0 until num of binary digits = 8
-        displayResult(converted: ("Binary", binary))
+        displayResult(converted: ("Binary", binary), settings: (1,0))
 
-       // saveCore(binary)
-        saveToCoreData(data: binary)
-        //displayResultView("Binary:",binary)
+        saveToCoreData(data: binary, settings: (1,0))
     }
     func decToHex() {//*******************
         let retrievedDec = getDecimal()
@@ -235,7 +228,7 @@ struct ContentView: View {
             return
         }
         displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (2,2))
-        saveToCoreData(data: hex.uppercased())
+        saveToCoreData(data: hex.uppercased(), settings: (2,2))
         
     }
     func hexToBin() {//******************
@@ -250,9 +243,8 @@ struct ContentView: View {
         }
         var bin = String(Int(hex, radix: 16)!, radix: 2)
         bin = padBinary(binary: bin)
-        displayResult(converted: ("Binary", bin))
-        saveToCoreData(data: bin)
-//
+        displayResult(converted: ("Binary", bin), settings: (2,0))
+        saveToCoreData(data: bin, settings: (2,0))
     }
     
     func hexToDec() {
@@ -267,13 +259,13 @@ struct ContentView: View {
         }
         let dec = Int(hex, radix: 16)!
         let stringDec = "\(dec)"
-        displayResult(converted: ("Decimal", stringDec))
+        displayResult(converted: ("Decimal", stringDec), settings: (2,1))
         
-        saveToCoreData(data: stringDec)
+        saveToCoreData(data: stringDec, settings: (2,1))
         
     }
     
-    // 0 = Bin, 1 = Hex, 2 = Hex
+    // 0 = Bin, 1 = Dec, 2 = Hex
     func convertButtonTapped() {
         let checkBool: Bool = true
         switch checkBool {
@@ -286,7 +278,7 @@ struct ContentView: View {
         case unitIndex == 2 && unitIndex2 == 0: hexToBin()
         case unitIndex == 2 && unitIndex2 == 1: hexToDec()
         case unitIndex == 2 && unitIndex2 == 2: hexToHex()
-        default: print("Error") //will never execute decault
+        default: print("Error") //will never execute default
         }
     }
     
@@ -310,10 +302,11 @@ struct ContentView: View {
         unitIndex = 1
         unitIndex2 = 1
         result = ""
+        showAlert = false
         
         errorMessage = ("Error", "Error", "Error")
-        managedObjectContext.delete(savedInputs[0])
-
+        //managedObjectContext.delete(savedInputs[0])
+        saveToCoreData(data: "")
     }
     
     
@@ -338,8 +331,8 @@ struct ContentView: View {
         coreData.fieldText = textName
 //        coreData.inputPick = "1"
 //        coreData.outputPick = "2"
-        coreData.inputPick = "\(settings!.0)"
-        coreData.outputPick = "\(settings!.1)"
+        coreData.inputPick = "\(settings?.0 ?? 1)"
+        coreData.outputPick = "\(settings?.1 ?? 1)"
         coreData.resultPresent = true
         coreData.resultValue = data
         
@@ -347,7 +340,7 @@ struct ContentView: View {
             print("core saving")
             try self.managedObjectContext.save()
             savedInputs.append(coreData)
-            setupView(setting: (settings!.0, settings!.1))
+            setupView(setting: (settings?.0 ?? 1, settings?.1 ?? 1))
         } catch {
             print("Error with core data retrieval")
         }
@@ -470,8 +463,6 @@ struct ContentView: View {
         }
     }
     
-
-
 struct LongWidthButton: ButtonStyle {
     
     func makeBody(configuration: Self.Configuration) -> some View {
@@ -495,8 +486,6 @@ struct RefreshButton: ButtonStyle {
             .background(configuration.isPressed ? Color.blue : Color.clear)
     }
 }
-
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
