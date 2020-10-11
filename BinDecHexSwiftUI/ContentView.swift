@@ -18,30 +18,36 @@ struct ContentView: View {
     @FetchRequest(entity: SavedInput.entity(), sortDescriptors: [
                     NSSortDescriptor(keyPath: \SavedInput.fieldText, ascending: true)]
     ) var savedData: FetchedResults<SavedInput> //saved data holds the persisted data
-
+    
     @State private var unitIndex: Int = 1 //first picker's unit
     @State private var unitIndex2: Int = 1 //secon picker's unit
     @State private var textName = "" //input TextField
     @State private var result = "" //Result Text
     @State private var showResult = false
-    @State private var showResultLabel = false
     @State private var showAlert = false
-    @State private var errorMessage: (String, String, String) = ("Error", "Error", "Error")
+    @State private var errorMessage: (String, String, String) = ("", "", "") //Default
+    @State private var savedInputs: [SavedInput] = [] //storing core fetched data
     var unit = ["Bin", "Dec", "Hex"]
-    var unit2 = ["Bin", "Dec", "Hex"]
-    var saveUnit1: Int = 1
-    var saveUnit2: Int = 1
-    @State private var savedInputs: [SavedInput] = []
     
-        func fetchCoreInput() { // When view appears
-        print("Called fetchCoreInput")
-            
-       savedInputs = CoreDataManager.shared.getAllSavedInput()
-        setupView()
-            
+    
+    // 0 = Bin, 1 = Dec, 2 = Hex
+    func convertButtonTapped() {
+        let checkBool: Bool = true
+        switch checkBool {
+        case unitIndex == 0 && unitIndex2 == 1: binToDec()
+        case unitIndex == 0 && unitIndex2 == 2: binToHex()
+        case unitIndex == 0 && unitIndex2 == 0: binToBin()
+        case unitIndex == 1 && unitIndex2 == 0: decToBin()
+        case unitIndex == 1 && unitIndex2 == 2: decToHex()
+        case unitIndex == 1 && unitIndex2 == 1: decToDec()
+        case unitIndex == 2 && unitIndex2 == 0: hexToBin()
+        case unitIndex == 2 && unitIndex2 == 1: hexToDec()
+        case unitIndex == 2 && unitIndex2 == 2: hexToHex()
+        default: print("Error") //will never execute default
+        }
     }
     
-
+    
     //Check Format Methods
     func padBinary(binary: String) -> String {
         var binary = binary
@@ -52,9 +58,14 @@ struct ContentView: View {
         return binary
     }
     
+    
     func hapticError() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
     }
     
+    
+    //Check Syntax Methods
     func checkBinary(binary: String) -> Bool {
         if binary == "" {
             updateErrorMessage(message: ("Input Error", "Can't convert because input is not in binary format.", "Ok"))
@@ -68,6 +79,7 @@ struct ContentView: View {
         }
         return true
     }
+    
     
     func checkDecimal(decimal: String) -> Bool {
         let checkNum = Int(decimal) //convert passed string to int, won't convert nonint
@@ -90,6 +102,7 @@ struct ContentView: View {
         }
     }
     
+    
     func checkHexadecimal() -> String {
         let hex = textName
         
@@ -110,7 +123,6 @@ struct ContentView: View {
         return hex
     }
     
-    //Obtain/Handle Methods
     
     func getBinary() -> String {
         let bin = textName
@@ -122,6 +134,7 @@ struct ContentView: View {
         return bin
     }
     
+    
     func getDecimal() -> String {
         let dec = textName
         
@@ -130,8 +143,8 @@ struct ContentView: View {
             return "error"
         }
         return dec
-        
     }
+    
     
     func getHexadecimal() -> String {
         let hex = textName
@@ -153,8 +166,9 @@ struct ContentView: View {
         return hex
     }
     
+    
     //Convert Methods
-    func binToBin() {//********************
+    func binToBin() {
         var bin = getBinary()
         
         guard bin != "error" else{
@@ -162,39 +176,42 @@ struct ContentView: View {
         }
         
         bin = padBinary(binary: bin)
-        displayResult(converted: ("Binary", bin), settings: (0,0))
         
-        saveToCoreData(data: bin, settings: (0,0))
+        saveToCoreData(data: "Binary: \(bin)", settings: (0,0))
     }
-    func binToDec() {//*******************
+    
+    
+    func binToDec() {
         let bin = getBinary()
         guard bin != "error" else{ return}
         
         if let dec = Int(textName, radix: 2) {
             let stringDec = "\(dec)"
-            displayResult(converted: ("Decimal", stringDec), settings: (0,1))
-            saveToCoreData(data: stringDec, settings: (0,1))
+            saveToCoreData(data: "Decimal: \(stringDec)", settings: (0,1))
         }
     }
-    func binToHex() {//**********************
+    
+    
+    func binToHex() {
         let bin = self.getBinary()
         guard bin != "error" else{
             return
         }
         let hex = String(Int(bin, radix: 2)!, radix: 16)//Convert Binary to Hex
-        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (0,2))
-        saveToCoreData(data: hex.uppercased(), settings: (0,2))
+        saveToCoreData(data: "Hexadecimal: \(hex.uppercased())", settings: (0,2))
     }
-    func decToDec() {//**********************
+    
+    
+    func decToDec() {
         let dec = getDecimal()
         guard dec != "error" else {
             return
         }
-        displayResult(converted: ("Decimal", dec), settings: (1,1))
-
-        saveToCoreData(data: dec, settings: (1,1))
+        saveToCoreData(data: "Decimal: \(dec)", settings: (1,1))
     }
-    func decToBin() {//*****************
+    
+    
+    func decToBin() {
         let retrievedDec = getDecimal()
         guard retrievedDec != "error" else {
             return
@@ -203,21 +220,22 @@ struct ContentView: View {
         var binary = String(bin!, radix: 2) //converting from string to binary
         
         binary = padBinary(binary: binary) //padding to the left with 0 until num of binary digits = 8
-        displayResult(converted: ("Binary", binary), settings: (1,0))
-
-        saveToCoreData(data: binary, settings: (1,0))
+        saveToCoreData(data: "Binary: \(binary)", settings: (1,0))
     }
-    func decToHex() {//*******************
+    
+    
+    func decToHex() {
         let retrievedDec = getDecimal()
         guard retrievedDec != "error" else {
             return
         }
         let dec = Int(retrievedDec)
         let hex = String(dec!, radix: 16)
-        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (1,2))
-        saveToCoreData(data: hex.uppercased(), settings: (1,2))
+        saveToCoreData(data: "Hexadecimal: \(hex.uppercased())", settings: (1,2))
     }
-    func hexToHex() {//*****************
+    
+    
+    func hexToHex() {
         let hex = checkHexadecimal()
         
         guard hex != "error" else{
@@ -228,11 +246,11 @@ struct ContentView: View {
             updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
             return
         }
-        displayResult(converted: ("Hexadecimal", hex.uppercased()), settings: (2,2))
-        saveToCoreData(data: hex.uppercased(), settings: (2,2))
-        
+        saveToCoreData(data: "Hexadecimal: \(hex.uppercased())", settings: (2,2))
     }
-    func hexToBin() {//******************
+    
+    
+    func hexToBin() {
         let hex = checkHexadecimal()
         guard hex != "error" else{
             updateErrorMessage(message: ("Input Error", "Can't convert because input is not in hexadecimal format.", "Ok"))
@@ -244,9 +262,9 @@ struct ContentView: View {
         }
         var bin = String(Int(hex, radix: 16)!, radix: 2)
         bin = padBinary(binary: bin)
-        displayResult(converted: ("Binary", bin), settings: (2,0))
-        saveToCoreData(data: bin, settings: (2,0))
+        saveToCoreData(data: "Binary: \(bin)", settings: (2,0))
     }
+    
     
     func hexToDec() {
         let hex = checkHexadecimal()
@@ -260,132 +278,86 @@ struct ContentView: View {
         }
         let dec = Int(hex, radix: 16)!
         let stringDec = "\(dec)"
-        displayResult(converted: ("Decimal", stringDec), settings: (2,1))
-        
-        saveToCoreData(data: stringDec, settings: (2,1))
-        
+        saveToCoreData(data: "Decimal: \(stringDec)", settings: (2,1))
     }
     
-    // 0 = Bin, 1 = Dec, 2 = Hex
-    func convertButtonTapped() {
-        let checkBool: Bool = true
-        switch checkBool {
-        case unitIndex == 0 && unitIndex2 == 1: binToDec()
-        case unitIndex == 0 && unitIndex2 == 2: binToHex()
-        case unitIndex == 0 && unitIndex2 == 0: binToBin()
-        case unitIndex == 1 && unitIndex2 == 0: decToBin()
-        case unitIndex == 1 && unitIndex2 == 2: decToHex()
-        case unitIndex == 1 && unitIndex2 == 1: decToDec()
-        case unitIndex == 2 && unitIndex2 == 0: hexToBin()
-        case unitIndex == 2 && unitIndex2 == 1: hexToDec()
-        case unitIndex == 2 && unitIndex2 == 2: hexToHex()
-        default: print("Error") //will never execute default
-        }
-    }
     
     //Alert Methods
-    
     func updateErrorMessage(message: (String, String, String)) {
         errorMessage = (message.0, message.1, message.2)
+        hapticError()
         showAlert = true
-    }
-    
-    func displayResult(converted: (String, String), settings: (Int, Int)? = nil) {
-        if settings != nil {
-            unitIndex = settings!.0
-            unitIndex2 = settings!.1
-        }
-        result = "\(converted.0): \(converted.1)"
-        print(" showing result \(result) in displayResult method")
-    }
-    
-    func resetView() {
-        textName = ""
-        unitIndex = 1
-        unitIndex2 = 1
-        result = ""
-        showAlert = false
-        showResultLabel = false
-        
-        errorMessage = ("Error", "Error", "Error")
-        //managedObjectContext.delete(savedInputs[0])
-        saveToCoreData(data: "")
     }
     
     
     //CoreData Methods
-    func saveToCoreData(data: String, settings: (Int, Int)? = nil) {
-        print("made it to SaveCore Data method")
+    func fetchCoreInput() { // fetching saved data from core data
+        savedInputs = CoreDataManager.shared.getAllSavedInput()
+        setupView()
+    }
+    
+    
+    func saveToCoreData(data: String, settings: (Int, Int)? = nil) { //saving data to core data
         if !savedInputs.isEmpty {
-            print("***************************")
-            print(savedInputs[0])
-            print(savedInputs.count)
-            print("***************************")
-            
             for i in 0..<savedInputs.count {
                 managedObjectContext.delete(savedInputs[i]) //deleting current saved before new save
             }
             savedInputs.removeAll()
         }
         else {
-            print("Testing delete didn't happen")
+            print("Core Data wasn't deleted")
         }
         let coreData = SavedInput(context: self.managedObjectContext)
         coreData.fieldText = textName
-//        coreData.inputPick = "1"
-//        coreData.outputPick = "2"
         coreData.inputPick = "\(settings?.0 ?? 1)"
         coreData.outputPick = "\(settings?.1 ?? 1)"
         coreData.resultPresent = true
         coreData.resultValue = data
         
         do {
-            print("core saving")
             try self.managedObjectContext.save()
             savedInputs.append(coreData)
-            setupView(setting: (settings?.0 ?? 1, settings?.1 ?? 1))
+            //            setupView(data: data)
+            setupView()
         } catch {
-            print("Error with core data retrieval")
+            print("Error with core data saving")
         }
-//        savedInputs[0] = coreData
-                
     }
     
-    func defaultView() {
-        print("default View called")
+    
+    // Views
+    func defaultView() { //reseting view to default model
         unitIndex = 1
         unitIndex2 = 1
         textName = ""
         result = ""
         showResult = false
-        
     }
     
-    func setupView(setting: (Int, Int)? = nil) { //Error maybe here
-        guard !savedInputs.isEmpty else {
-            print("savedInputs is empty")
+    
+    func resetView() {
+        defaultView()
+        saveToCoreData(data: "") //replacing saved coredata with blank core data
+    }
+    
+    
+    func setupView(data: String? = nil) { //setting up view
+        guard !savedInputs.isEmpty else { //ensuring fetched data was recieved if not use default view
             defaultView()
             return
         }
-        print("Made it to setupView Method")
-        unitIndex = Int(savedInputs.last!.inputPick!)!
-        unitIndex2 = Int(savedInputs.last!.outputPick!)!
-        textName = savedInputs.last!.fieldText!
-        result = savedInputs.last!.resultValue!
-        showResult = savedInputs.last!.resultPresent
         
-        if savedInputs.count > 0 {
-            showResult = true
-        }
-        else {
-            showResult = false
-        }
+        //using data of type SavedInput to set up view
+        unitIndex = Int(savedInputs.last?.inputPick ?? "1") ?? 1 //picker 1
+        unitIndex2 = Int(savedInputs.last?.outputPick ?? "1") ?? 1 //picker 2
+        textName = savedInputs.last?.fieldText ?? ""
+        result = savedInputs.last?.resultValue ?? ""
+        showResult = (savedInputs.last?.resultPresent ?? false) && (savedInputs.count > 0 ? true : false)
     }
-
-
     
-  //************************************************************************
-    //UI
+    
+    //************************************************************************
+    //UI Canvas
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -403,20 +375,18 @@ struct ContentView: View {
                     }
                     HStack {
                         VStack {
-                            Picker(selection: self.$unitIndex, label: Text("Unit").bold()) {
+                            Picker(selection: self.$unitIndex, label: Text("UnitsIn").bold()) {
                                 ForEach(0..<self.unit.count) {
                                     Text(self.unit[$0])
                                 }
-                            }.labelsHidden().pickerStyle(WheelPickerStyle())
+                            }.labelsHidden().pickerStyle(DefaultPickerStyle())
                         }.labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
                         
                         VStack {
-                            
-                            Picker(selection: self.$unitIndex2, label: Text("Unit2").bold()) {
-                                ForEach(0..<self.unit2.count) {
-                                    Text(self.unit2[$0])
+                            Picker(selection: self.$unitIndex2, label: Text("UnitsOu").bold()) {
+                                ForEach(0..<self.unit.count) {
+                                    Text(self.unit[$0])
                                 }
-                                
                             }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
                         }
                     }
@@ -430,8 +400,6 @@ struct ContentView: View {
                     }
                     Button(action: {
                         convertButtonTapped()
-                        
-                        
                     }) {
                         Text("Convert")
                             .foregroundColor(Color.black)
@@ -446,7 +414,6 @@ struct ContentView: View {
                     Spacer()
                     
                 }.background(Color(UIColor.secondarySystemBackground)).edgesIgnoringSafeArea(.all).navigationBarTitle(Text("BinDecHex"), displayMode: .inline).navigationBarItems(trailing: Button(action: {
-                    print("Refreshed tapped")
                     resetView()
                 }) {
                     Image(systemName: "arrow.clockwise")
@@ -456,43 +423,38 @@ struct ContentView: View {
         }.onAppear {
             UINavigationBar.appearance().backgroundColor = UIColor.secondarySystemBackground
             UINavigationBar.appearance().shadowImage = UIImage()
-            print("OnAppear")
-            unitIndex = saveUnit1
-            unitIndex2 = saveUnit2
             defaultView()
             fetchCoreInput()
-            
-            
         }
     }
     
-struct LongWidthButton: ButtonStyle {
+    struct LongWidthButton: ButtonStyle {
+        
+        func makeBody(configuration: Self.Configuration) -> some View {
+            configuration.label
+                .padding(.all)
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding(.all)
+                .background(configuration.isPressed ? Color.blue : Color.yellow)
+                .cornerRadius(10.0)
+                .padding()
+                .shadow(color: .black, radius: 1.0, x: 0.0, y: configuration.isPressed ? -2.0 : 2.0)
+        }
+    }
     
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .padding(.all)
-            .frame(minWidth: 0, maxWidth: .infinity)
-            .padding(.all)
-            .background(configuration.isPressed ? Color.blue : Color.yellow)
-            .cornerRadius(10.0)
-            .padding()
-            .shadow(color: .black, radius: 1.0, x: 0.0, y: configuration.isPressed ? -2.0 : 2.0)
+    struct RefreshButton: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .cornerRadius(10)
+                .foregroundColor(configuration.isPressed ? Color.yellow : Color.green)
+                .padding(.all)
+                .background(configuration.isPressed ? Color.blue : Color.clear)
+        }
     }
-}
-
-struct RefreshButton: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .cornerRadius(10)
-            .foregroundColor(configuration.isPressed ? Color.yellow : Color.green)
-            .padding(.all)
-            .background(configuration.isPressed ? Color.blue : Color.clear)
+    
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView().previewDevice("iPhone 11 Pro")
+        }
     }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().previewDevice("iPhone 11 Pro")
-    }
-}
 }
