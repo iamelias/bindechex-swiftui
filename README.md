@@ -13,7 +13,7 @@ User enters app, selects input format(bin/dec/hex), selects output format(bin/de
 No login required
 
 **Tools used:**
-Core Data, SwiftUI, iPhone 11 Pro/ iPhone 11 simulator, iPad 
+Core Data, SwiftUI, iPhone 11 Pro/ iPhone 11 simulator
 
 **Select below for larger clearer images**
 
