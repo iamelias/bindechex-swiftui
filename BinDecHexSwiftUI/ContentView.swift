@@ -374,37 +374,16 @@ struct ContentView: View {
                         Spacer()
                     }
                     HStack {
-                        VStack {
-                            Picker(selection: self.$unitIndex, label: Text("UnitsIn").bold()) {
-                                ForEach(0..<self.unit.count) {
-                                    Text(self.unit[$0])
-                                }
-                            }.labelsHidden().pickerStyle(DefaultPickerStyle())
-                        }.labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
-                        
-                        VStack {
-                            Picker(selection: self.$unitIndex2, label: Text("UnitsOu").bold()) {
-                                ForEach(0..<self.unit.count) {
-                                    Text(self.unit[$0])
-                                }
-                            }.pickerStyle(DefaultPickerStyle()).labelsHidden().frame(maxWidth: geometry.size.width / 2).clipped()
-                        }
+                            MyPicker(selectedUnit: self.$unitIndex, units: unit).frame(maxWidth: geometry.size.width/2).clipped()
+                            MyPicker(selectedUnit: self.$unitIndex2, units: unit).frame(maxWidth: geometry.size.width/2).clipped()
                     }
                     Text("Enter Value").fontWeight(.heavy)
                     HStack {
-                        TextField("0", text: $textName)
-                            .padding(.horizontal)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .modifier(Keyboard())
+                        MyTextField(textString: $textName)
                         Spacer()
                     }
-                    Button(action: {
-                        convertButtonTapped()
-                    }) {
-                        Text("Convert")
-                            .foregroundColor(Color.black)
-                            .fontWeight(.heavy)
-                    }
+                    
+                    MyButton(title: "Convert", action: convertButtonTapped)
                     .buttonStyle(LongWidthButton())
                     .alert(isPresented: $showAlert) {
                         Alert(title: Text("\(errorMessage.0)"), message: Text("\(errorMessage.1)"), dismissButton: .default(Text("\(errorMessage.2)")))
@@ -433,7 +412,7 @@ struct ContentView: View {
         func makeBody(configuration: Self.Configuration) -> some View {
             configuration.label
                 .padding(.all)
-                .frame(minWidth: 0, maxWidth: .infinity)
+                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 10.0)
                 .padding(.all)
                 .background(configuration.isPressed ? Color.blue : Color.yellow)
                 .cornerRadius(10.0)
