@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39141DE327B99ED700A8FF0C /* MyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39141DE227B99ED700A8FF0C /* MyPicker.swift */; };
+		39141DE527B9A04600A8FF0C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39141DE427B9A04600A8FF0C /* Constants.swift */; };
+		39141DE927B9AFE800A8FF0C /* MyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39141DE827B9AFE800A8FF0C /* MyTextField.swift */; };
+		39141DEB27B9B46100A8FF0C /* MyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39141DEA27B9B46100A8FF0C /* MyButton.swift */; };
 		6475CAF2252104F900BBC263 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6475CAF1252104F900BBC263 /* Keyboard.swift */; };
 		648B622924D092AD00CE14B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648B622824D092AD00CE14B1 /* AppDelegate.swift */; };
 		648B622B24D092AD00CE14B1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648B622A24D092AD00CE14B1 /* SceneDelegate.swift */; };
@@ -20,6 +24,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		39141DE227B99ED700A8FF0C /* MyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPicker.swift; sourceTree = "<group>"; };
+		39141DE427B9A04600A8FF0C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		39141DE827B9AFE800A8FF0C /* MyTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTextField.swift; sourceTree = "<group>"; };
+		39141DEA27B9B46100A8FF0C /* MyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyButton.swift; sourceTree = "<group>"; };
 		6475CAF1252104F900BBC263 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
 		648B622524D092AD00CE14B1 /* BinDecHexSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinDecHexSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		648B622824D092AD00CE14B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,6 +53,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		39141DEC27B9BBDA00A8FF0C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				39141DEA27B9B46100A8FF0C /* MyButton.swift */,
+				39141DE827B9AFE800A8FF0C /* MyTextField.swift */,
+				39141DE227B99ED700A8FF0C /* MyPicker.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		39141DED27B9BBE200A8FF0C /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "View Models";
+			sourceTree = "<group>";
+		};
 		648B621C24D092AD00CE14B1 = {
 			isa = PBXGroup;
 			children = (
@@ -64,9 +89,11 @@
 		648B622724D092AD00CE14B1 /* BinDecHexSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				39141DED27B9BBE200A8FF0C /* View Models */,
 				648B622824D092AD00CE14B1 /* AppDelegate.swift */,
 				648B622A24D092AD00CE14B1 /* SceneDelegate.swift */,
 				648B622F24D092AD00CE14B1 /* ContentView.swift */,
+				39141DEC27B9BBDA00A8FF0C /* Views */,
 				648B623124D092B100CE14B1 /* Assets.xcassets */,
 				648B623624D092B100CE14B1 /* LaunchScreen.storyboard */,
 				648B623924D092B100CE14B1 /* Info.plist */,
@@ -75,6 +102,7 @@
 				6475CAF1252104F900BBC263 /* Keyboard.swift */,
 				649064E5252AA71E00793425 /* CoreDataManager.swift */,
 				649064E8252AAE4A00793425 /* NSManagedContext+Exts.swift */,
+				39141DE427B9A04600A8FF0C /* Constants.swift */,
 			);
 			path = BinDecHexSwiftUI;
 			sourceTree = "<group>";
@@ -163,8 +191,12 @@
 				648B622E24D092AD00CE14B1 /* BinDecHexSwiftUI.xcdatamodeld in Sources */,
 				648B622924D092AD00CE14B1 /* AppDelegate.swift in Sources */,
 				6475CAF2252104F900BBC263 /* Keyboard.swift in Sources */,
+				39141DE927B9AFE800A8FF0C /* MyTextField.swift in Sources */,
+				39141DE327B99ED700A8FF0C /* MyPicker.swift in Sources */,
+				39141DEB27B9B46100A8FF0C /* MyButton.swift in Sources */,
 				648B623024D092AD00CE14B1 /* ContentView.swift in Sources */,
 				648B622B24D092AD00CE14B1 /* SceneDelegate.swift in Sources */,
+				39141DE527B9A04600A8FF0C /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
